@@ -1,0 +1,176 @@
+{% extends 'index.html' %}
+{% load staticfiles %}
+{% block title %}天天果园-商品详情{% endblock %}
+{% block content %}
+	<div class="search_bar clearfix">
+		<a href="{% url 'index' %}" class="logo fl"><img src="{% static 'images/logo.png' %}"></a>
+		<div class="search_con fl">
+			<input type="text" class="input_text fl" name="" placeholder="搜索商品">
+			<input type="button" class="input_btn fr" name="" value="搜索">
+		</div>
+		<div class="guest_cart fr">
+			<a href="{% url 'cart' %}" class="cart_name fl">我的购物车</a>
+			<div class="goods_count fl" id="show_count">{{mycartc}}</div>
+		</div>
+	</div>
+
+	<div class="navbar_con">
+		<div class="navbar clearfix">
+			<div class="subnav_con fl">
+				<h1>全部商品分类</h1>	
+				<span></span>			
+				<ul class="subnav">
+					<li><a href="/prolist/?page=1&Type=新鲜水果/" class="fruit">新鲜水果</a></li>
+					<li><a href="/prolist/?page=1&Type=海鲜水产/" class="seafood">海鲜水产</a></li>
+					<li><a href="/prolist/?page=1&Type=精品肉类/" class="meet">精品肉类</a></li>
+					<li><a href="/prolist/?page=1&Type=禽类蛋品/" class="egg">禽类蛋品</a></li>
+					<li><a href="/prolist/?page=1&Type=新鲜蔬菜/" class="vegetables">新鲜蔬菜</a></li>
+					<li><a href="/prolist/?page=1&Type=速冻食品/" class="ice">速冻食品</a></li>
+				</ul>
+			</div>
+			<ul class="navlist fl">
+				<li><a href="">首页</a></li>
+				<li class="interval">|</li>
+				<li><a href="">手机生鲜</a></li>
+				<li class="interval">|</li>
+				<li><a href="">抽奖</a></li>
+			</ul>
+		</div>
+	</div>
+
+	<div class="breadcrumb">
+		<a href="#">全部分类</a>
+		<span>></span>
+		<a href="#">新鲜水果</a>
+		<span>></span>
+		<a href="#">商品详情</a>
+	</div>
+
+	<div class="goods_detail_con clearfix">
+		<div class="goods_detail_pic fl"><img src="/{{ goodone.picture }}"></div>
+
+		<div class="goods_detail_list fr">
+			<h3>{{ goodone.title }}</h3>
+			<p>草莓浆果柔软多汁，味美爽口，适合速冻保鲜贮藏。草莓速冻后，可以保持原有的色、香、味，既便于贮藏，又便于外销。</p>
+			<div class="prize_bar">
+				<span class="show_pirze">¥<em>{{ goodone.price }}</em></span>
+				<span class="show_unit">单  位：500g</span>
+			</div>
+			<div class="goods_num clearfix">
+				<div class="num_name fl">数 量：</div>
+				<div class="num_add fl">
+					<input type="text" class="num_show fl" value="1">
+					<a href="javascript:add();" class="add fr">+</a>
+					<a href="javascript:sub();" class="minus fr">-</a>
+				</div> 
+			</div>
+			<div class="total" id="total_">总价：<em></em></div>
+			<div class="operate_btn">
+				<a href="javascript:;" class="buy_btn">立即购买</a>
+				<a  class="add_cart" id="add_cart" style="cursor: pointer;">加入购物车</a>
+			</div>
+		</div>
+	</div>
+
+	<div class="main_wrap clearfix">
+		<div class="l_wrap fl clearfix">
+			<div class="new_goods">
+				<h3>新品推荐</h3>
+				<ul>
+                    {% for hotfood in hot_list %}
+                        <li>
+                            <a href="{{ hotfood.get_absolute_url }}"><img src="/{{ hotfood.picture }}"></a>
+                            <h4><a href="{{ hotfood.get_absolute_url }}">{{ hotfood.title }}</a></h4>
+                            <div class="prize">{{ hotfood.price }}</div>
+                        </li>
+                    {% endfor %}
+				</ul>
+			</div>
+		</div>
+
+		<div class="r_wrap fr clearfix">
+			<ul class="detail_tab clearfix">
+				<li class="active">商品介绍</li>
+				<li>评论</li>
+			</ul>
+
+			<div class="tab_content">
+				<dl>
+					<dt>商品详情：</dt>
+					<dd>草莓采摘园位于北京大兴区 庞各庄镇四各庄村 ，每年1月-6月面向北京以及周围城市提供新鲜草莓采摘和精品礼盒装草莓，草莓品种多样丰富，个大香甜。所有草莓均严格按照有机标准培育，不使用任何化肥和农药。草莓在采摘期间免洗可以直接食用。欢迎喜欢草莓的市民前来采摘，也欢迎各大单位选购精品有机草莓礼盒，有机草莓礼盒是亲朋馈赠、福利送礼的最佳选择。 </dd>
+				</dl>
+			</div>
+
+		</div>
+	</div>
+{% endblock %}
+{% block script %}
+	<script type="text/javascript" src="{% static 'js/jquery-1.12.4.min.js' %}"></script>
+	<script type="text/javascript">
+
+        $(function () {
+
+            var count = $('.num_show').val();
+            var total = count * $('.show_pirze em').text();
+            $('#total_ em').text(total.toFixed(2));
+
+
+
+        });
+        function add() {
+            var numa = parseInt($('.num_show').val());
+            $('.num_show').val(numa+1);
+            $('.num_show').removeAttr("disabled");
+            $('.num_show').blur();
+            total()
+        }
+        function sub() {
+            var numa = parseInt($('.num_show').val());
+            if (numa > 1){
+                $('.num_show').val(numa-1);
+            }else {
+                $('.num_show').attr('disabled', 'disabled');
+            }
+            $('.num_show').blur();
+            total();
+        }
+        function total() {
+            var count = $('.num_show').val();
+            var total = count * $('.show_pirze em').text();
+            $('#total_ em').text(total.toFixed(2));
+        }
+		var $add_x = $('#add_cart').offset().top;
+		var $add_y = $('#add_cart').offset().left;
+
+		var $to_x = $('#show_count').offset().top;
+		var $to_y = $('#show_count').offset().left;
+
+		$(".add_jump").css({'left':$add_y+80,'top':$add_x+10,'display':'block'});
+		$('#add_cart').click(function(){
+			$(".add_jump").stop().animate({
+				'left': $to_y+7,
+				'top': $to_x+7},
+				"fast", function() {
+					$(".add_jump").fadeOut('fast',function(){
+						$('#show_count').html(2);
+					});
+			});
+			$.ajax({
+                url: '/cart/addcart/?good_id='+ '{{ goodone.id }}'+ '&gcount='+ $('.num_show').val(),
+                type: 'get',
+                datatype: 'json',
+                success:function (data) {
+					console.log(typeof($('.num_show').val()));
+					console.log(typeof($('#show_count').text()));
+
+                    $('#show_count').text(parseInt($('.num_show').val()) + parseInt($('#show_count').text()));
+                },
+                error:function (error) {
+                	console.log(error);
+                    alert('添加失败, 请检查网络并重新添加. 失败原因见' + error)
+                }
+            })
+		})
+
+	</script>
+{% endblock %}

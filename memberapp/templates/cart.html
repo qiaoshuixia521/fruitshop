@@ -1,0 +1,137 @@
+{% extends 'index.html' %}
+{% block title %}天天果园-购物车{% endblock %}
+{% block content %}
+    {% load staticfiles %}
+	<div class="search_bar clearfix">
+		<a href="{% url 'index' %}" class="logo fl"><img src="{% static 'images/logo.png' %}"></a>
+		<div class="sub_page_name fl">|&nbsp;&nbsp;&nbsp;&nbsp;购物车</div>
+		<div class="search_con fr">
+			<input type="text" class="input_text fl" name="" placeholder="搜索商品">
+			<input type="button" class="input_btn fr" name="" value="搜索">
+		</div>		
+	</div>
+
+	<div class="total_count">全部商品<em>{{mycartc}}</em>件</div>
+	<ul class="cart_list_th clearfix">
+		<li class="col01">商品名称</li>
+		<li class="col02">商品单位</li>
+		<li class="col03">商品价格</li>
+		<li class="col04">数量</li>
+		<li class="col05">小计</li>
+		<li class="col06">操作</li>
+	</ul>
+    {% for find_good in find_goods %}
+        <ul class="cart_list_td clearfix">
+            <li class="col01"><input type="checkbox" name="check" onclick="count()"></li>
+            <li class="col02"><img src="/{{ find_good.good.picture }}"></li>
+            <li class="col03">{{ find_good.good.title }}
+				<!--<br><em>{{ find_good.good.price }}/500g</em>-->
+			</li>
+            <li class="col04">500g</li>
+            <li class="col05">{{ find_good.good.price }}</li>
+            <li class="col06">
+                <div class="num_add">
+                    <a href="javascript:;" class="add fl">+</a>
+                    <input type="text" class="num_show fl" value="{{ find_good.ccount }}">
+                    <a href="javascript:;" class="minus fl">-</a>
+                </div>
+            </li>
+            <li class="col07">{% widthratio find_good.good.price  1 find_good.ccount %}  元</li>
+            <li class="col08"><a  onclick="deletea({{find_good.id}})"  style="cursor: pointer;">删除</a></li>
+	    </ul>
+    {% endfor %}
+
+
+	<ul class="settlements">
+		<li class="col01"><input type="checkbox" name="allcheck" id="allcheck"/></li>
+		<li class="col02">全选</li>
+		<li class="col03">合计(不含运费)：<span>¥</span><em id="acounts">0</em><br>共计<b id="acot">0</b>件商品</li>
+		<li class="col04"><a onclick="caToor()">去结算</a></li>
+	</ul>
+{% endblock %}
+{% block script %}
+	<script type="text/javascript" src="{% static 'js/jquery-1.12.4.min.js' %}"></script>
+	<script type="text/javascript">
+	$('#allcheck').click(function(){
+		if(this.checked){
+			$('input[name="check"]').prop('checked',true);
+			var s= $('input[name="check"]:checked').length;
+			$('#acot').text(s);
+		}else{
+       		$('input[name="check"]').prop('checked',false);
+			var s= $('input[name="check"]:checked').length;
+			$('#acot').text(s);
+		}
+		var a=0;
+		$.each($('input:checkbox:checked').parent().nextAll('.col07'),function(){
+		a=a+parseInt(this.innerText.replace(/[^0-9]+/g, ''))
+
+        });
+		$('#acounts').text(a);
+
+    });
+	function count(){
+		var s= $('input[name="check"]:checked').length;
+		$('#acot').text(s);
+		var a=0;
+		$.each($('input:checkbox:checked').parent().nextAll('.col07'),function(){
+			a=a+parseInt(this.innerText.replace(/[^0-9]+/g, ''))
+        });
+		$('#acounts').text(a);
+	}
+	function deletea(cart_id){
+		$.ajax({
+                url: '/cart/deletecart',
+                type: 'get',
+                datatype: 'json',
+                data:{
+                	'cart_id':cart_id,
+                },
+                success:function (data) {
+                    location.href  ="{% url 'cart' %}";
+                },
+                error:function (error) {
+                	console.log(error);
+                    alert('添加失败, 请检查网络并重新添加. 失败原因见' + error)
+                }
+        })
+	}
+
+
+	function caToor(){
+		var cals=[];
+		<!--double each can push all {} into []-->
+		$.each($('input:checkbox:checked').parent(),function(){
+			var cal={};
+			$.each($(this).nextAll(),function(){
+				if(this.className=='col02'){
+					cal['img']=$(this).children("img")[0].src;
+				}
+				if(this.className=='col03'){
+					cal['title']=this.innerText;
+				}
+				if(this.className=='col04'){
+					cal['wi']=this.innerText;
+				}
+				if(this.className=='col05'){
+					cal['price']=this.innerText;
+				}
+				if(this.className=='col06'){
+					cal['ac']=$(this).find('input')[0].defaultValue;
+				}
+				if(this.className=='col07'){
+					cal['count']=this.innerText;
+				}
+
+			});
+			cals.push(cal);
+		});
+		console.log(cals);
+		sessionStorage.setItem('cals',JSON.stringify(cals));
+		sessionStorage.setItem('acounts',$('#acounts').text());
+		sessionStorage.setItem('acot',$('#acot').text());
+		location.href = 'placeorder';
+	}
+
+	</script>
+{% endblock %}

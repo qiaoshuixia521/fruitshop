@@ -1,0 +1,137 @@
+{#<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">#}
+{#<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">#}
+{#<head>#}
+{#	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">#}
+{#	<title>天天果园-用户中心</title>#}
+{#	<link rel="stylesheet" type="text/css" href="css/reset.css">#}
+{#	<link rel="stylesheet" type="text/css" href="css/main.css">#}
+{#</head>#}
+{#<body>#}
+{#	<div class="header_con">#}
+{#		<div class="header">#}
+{#			<div class="welcome fl">欢迎来到天天果园!</div>#}
+{#			<div class="fr">#}
+{#				<div class="login_info fl">#}
+{#					欢迎您：<em>睡了个觉</em>#}
+{#				</div>#}
+{#				<div class="login_btn fl">#}
+{#					<a href="login.html">登录</a>#}
+{#					<span>|</span>#}
+{#					<a href="register.html">注册</a>#}
+{#				</div>#}
+{#				<div class="user_link fl">#}
+{#					<span>|</span>#}
+{#					<a href="user_center_info.html">用户中心</a>#}
+{#					<span>|</span>#}
+{#					<a href="cart.html">我的购物车</a>#}
+{#					<span>|</span>#}
+{#					<a href="user_center_order.html">我的订单</a>#}
+{#				</div>#}
+{#			</div>#}
+{#		</div>		#}
+{#	</div>#}
+{% extends 'index.html' %}
+{% block title %}天天果园-用户中心{% endblock %}
+{% block content %}
+
+
+    {% load staticfiles %}
+<script type="text/javascript" src="{% static 'js/jquery-1.12.4.min.js' %}"></script>
+	<script type="text/javascript">
+	function edit(address,aname,cellphone,id){
+		$('#addresseed').val(aname);
+		$('#Detailed_addressd').val(address);
+		$('#cellphoned').val(cellphone);
+		$('#ida').val(id);
+		$('.lightbox').css('display','block');
+		$('.site_vc').css('display','block');
+	};
+	function canceld(){
+
+		$('.lightbox').css('display','none');
+		$('.site_vc').css('display','none');
+	}
+
+
+	</script>
+	<div class="search_bar clearfix">
+		<a href="{% url 'index' %}" class="logo fl"><img src="{% static 'images/logo.png' %}"></a>
+		<div class="sub_page_name fl">|&nbsp;&nbsp;&nbsp;&nbsp;用户中心</div>
+		<div class="search_con fr">
+			<input type="text" class="input_text fl" name="" placeholder="搜索商品">
+			<input type="button" class="input_btn fr" name="" value="搜索">
+		</div>		
+	</div>
+
+	<div class="main_con clearfix">
+		<div class="left_menu_con clearfix">
+			<h3>用户中心</h3>
+			<ul>
+				<li><a href="{% url 'user_info' %}">· 个人信息</a></li>
+				<li><a href="{% url 'orderlist' %}">· 全部订单</a></li>
+				<li><a href="{% url 'useraddress' %}" class="active">· 收货地址</a></li>
+			</ul>
+		</div>
+		<div class="right_content clearfix">
+				<h3 class="common_title2">收货地址</h3>
+				<div class="site_con">
+					{% for ads in adss %}
+					<dl>
+						<dt>当前地址：{{ ads.address }}</dt>
+						<dd>{{ ads.address }} （{{ ads.aname }} 收） {{ ads.cellphone }}
+							<a href="{% url 'deleteads' %}?adid={{ ads.id }}"><img src="{% static 'images/delete.jpeg' %}" style="width:25px;height:25px;float:right" ></a>
+							<a onclick="edit('{{ ads.address }}','{{ ads.aname }}','{{ ads.cellphone }}',{{ ads.id }})"><img src="{% static 'images/edit.jpeg' %}" style="width:25px;height:25px;float:right"/></a>
+						</dd>
+
+					</dl>
+
+					{% endfor %}
+				</div>
+				<h3 class="common_title2">添加地址</h3>
+				<div class="site_con">
+					<form action="{% url 'addads' %}" method="post">
+						 {% csrf_token %}
+						<div class="form_group">
+							<label for="addressee">收件人：</label>
+							<input type="text" name="addressee" id="addressee">
+						</div>
+						<div class="form_group form_group2">
+							<label for="Detailed_address">详细地址：</label>
+							<textarea class="site_area" name="Detailed_address" id="Detailed_address" style="width: 280px;"></textarea>
+						</div>
+
+						<div class="form_group">
+							<label for="cellphone">手机：</label>
+							<input type="text" name="cellphone" id="cellphone">
+						</div>
+						<input type="submit" name="" value="提交" class="info_submit">
+					</form>
+				</div>
+		</div>
+	</div>
+
+
+	<div class="lightbox"></div>
+	<div class="site_vc">
+		<form action="{% url 'editads' %}" method="post">
+			 {% csrf_token %}
+			<div class="form_group">
+				<label for="addressee">收件人：</label>
+				<input type="text" name="addresseed" id="addresseed" value="">
+			</div>
+			<div class="form_group form_group2">
+				<label for="Detailed_address">详细地址：</label>
+				<textarea class="site_area" name="Detailed_addressd" id="Detailed_addressd" value="" style="width: 280px;"></textarea>
+			</div>
+
+			<div class="form_group">
+				<label for="cellphone">手机：</label>
+				<input type="text" name="cellphoned" id="cellphoned" value="">
+			</div>
+			<input type="hidden" name="ida" id="ida" value="">
+			<input type="submit" name="" value="提交" class="info_submit">
+			<input type="buttom" name="cancel" onclick="canceld()" value="取消" class="info_submit">
+		</form>
+	</div>
+
+{% endblock %}
